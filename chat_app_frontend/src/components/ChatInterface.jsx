@@ -6,6 +6,10 @@ import { AiOutlineSend } from "react-icons/ai";
 import { ImAttachment } from "react-icons/im";
 import ProfileModal from "./ProfileModal";
 import ScrollableChat from "./ScrollableChat";
+import io from 'socket.io-client';
+
+const ENDPOINT = "http://localhost:5000";
+var socket,selectedChatCompare;
 
 const Dropdown = () => {
   const { handleOpen } = useContext(ChatContext);
@@ -33,6 +37,9 @@ const ChatPage = ({ selectedChat }) => {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [newMessage, setNewMessage] = useState();
+  const [socketConnected,setSocketConnected] = useState(false);
+  const [typing, setTyping] = useState(false);
+  const [isTyping,setIsTyping] = useState(false);
 
   const getName = (loggedUser, users) => {
     return users[0]._id === loggedUser._id ? users[1].name : users[0].name;
@@ -46,13 +53,35 @@ const ChatPage = ({ selectedChat }) => {
   useEffect(() => {
     // console.log(selectedChat);
   }, [selectedChat]);
-
+  useEffect(()=>{
+    socket = io(ENDPOINT);
+    socket.emit("setup",user);
+    socket.on("connected",()=> setSocketConnected(true));
+    socket.on("typing",()=> setIsTyping(true));
+    socket.on("stop typing",()=>setIsTyping(false));
+  },[]);
   const handleNewMessage = (e) => {
     const { value } = e.target;
     setNewMessage(value);
+    if(!socketConnected) return;
+    if(!typing){
+      socket.emit("typing",selectedChat._id);
+      setTyping(true);
+    }
+    let lastTypingTime = new Date().getTime();
+    var  timerLength = 3000;
+    setTimeout(()=>{
+      var timeNow = new Date().getTime();
+      var timeDiff = timeNow - lastTypingTime;
+      if(timeDiff >= timerLength && typing){
+        socket.emit("stop typing",selectedChat._id);
+        setTyping(false);
+      }
+    },timerLength);
   };
   const sendViaClick = async () => {
     if (newMessage) {
+      socket.emit("stop typing",selectedChat._id);
       try {
         const config = {
           headers: {
@@ -60,6 +89,7 @@ const ChatPage = ({ selectedChat }) => {
             Authorization: `Bearer ${user.token}`,
           },
         };
+        setNewMessage("");
         const { data } = await axios.post(
           "/api/message",
           {
@@ -71,7 +101,7 @@ const ChatPage = ({ selectedChat }) => {
 
         console.log(data);
 
-        setNewMessage("");
+        socket.emit("new message",data);
         setMessages([...messages, data]);
       } catch (error) {
         throw new Error(error.message);
@@ -80,6 +110,7 @@ const ChatPage = ({ selectedChat }) => {
   };
   const sendMessage = async (e) => {
     if (e.key === "Enter" && newMessage) {
+      socket.emit("stop typing",selectedChat._id);
       try {
         const config = {
           headers: {
@@ -98,7 +129,7 @@ const ChatPage = ({ selectedChat }) => {
         );
 
         console.log(data);
-
+        socket.emit("new message",data);
         setMessages([...messages, data]);
       } catch (error) {
         throw new Error(error.message);
@@ -118,13 +149,28 @@ const ChatPage = ({ selectedChat }) => {
       setMessages(data);
       console.log(data);
       setLoading(false);
+      socket.emit("join chat", selectedChat._id);
+
     } catch (error) {
       throw new Error(error.message);
     }
   }
   useEffect(()=>{
     fetchMessages();
+    selectedChatCompare = selectedChat;
   },[selectedChat,fetchMessageAgain]);
+
+  useEffect(()=>{
+    socket.on("message received",(newMessageReceived)=>{
+      if(!selectedChatCompare || selectedChatCompare._id !== newMessageReceived.chat._id){
+        // give notification
+      }
+      else{
+        setMessages([...messages,newMessageReceived]);
+      }
+    })
+  })
+
   return (
     <div className="bg-white flex flex-col justify-start items-center w-full h-full">
       <div className="w-full h-20 bg-zinc-700 flex flex-row justify-between">
@@ -180,15 +226,19 @@ const ChatPage = ({ selectedChat }) => {
           {open && <Dropdown />}
         </div>
       </div>
-      <div className="chatBg w-full flex flex-col justify-between h-full">
-        <div className="w-full text-white h-[100%]">
+      <div className="chatBg w-full flex flex-col justify-between h-full overflow-y-hidden">
+        <div className="w-full text-white h-[100%] overflow-y-scroll invisibleScrollBar overflow-x-hidden">
           <ScrollableChat messages={messages}/>
         </div>
-        <div className="w-full h-15 bottom-0 flex flex-row justify-around items-center z-10 p-2">
+        {/* {
+            isTyping && <div className="text-white">Loading...</div>
+        } */}
+        <div className="w-full h-15 bottom-0 flex flex-row justify-around items-center p-2">
           <ImAttachment
             className="hover:cursor-pointer text-[#ffea20]"
             size={25}
           />
+
           <input
             type="text"
             className=" lg:w-[90%] md:w-[80%] py-4 h-full px-6 bg-zinc-800 rounded-md outline-none text-white placeholder:text-md placeholder:text-zinc-500 focus:bg-zinc-800 shadow-xl w-[70%] transition-all"
@@ -209,8 +259,7 @@ const ChatPage = ({ selectedChat }) => {
 };
 
 const ChatInterface = () => {
-  const { user, selectedChat, setSelectedChat, chats, setChats } =
-    useContext(ChatContext);
+  const { user, selectedChat, setSelectedChat, chats, setChats } = useContext(ChatContext);
   return (
     <div className="w-[70%] h-full bg-zinc-900 flex flex-col justify-center items-center">
       {Object.keys(selectedChat).length !== 0 ? (

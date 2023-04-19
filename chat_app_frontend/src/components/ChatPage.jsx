@@ -11,7 +11,7 @@ const ChatPage = ()=>{
     const [createGc, setCreateGc] = useState(false);
     // const [, set] = useState(initialState)
     return(
-        <div className='flex flex-row justify-between w-screen bg-zinc-900 h-screen'>
+        <div className='flex flex-row lg:justify-between md:justify-start w-screen bg-zinc-900 h-screen'>
             <SideBar toggle={toggle} setToggle={setToggle} createGc={createGc} setCreateGc={setCreateGc}/>
             <Users toggle={toggle} setToggle={setToggle} createGc={createGc} setCreateGc={setCreateGc}/>
             <ChatInterface/>

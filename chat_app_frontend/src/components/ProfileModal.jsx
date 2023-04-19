@@ -153,15 +153,7 @@ const ProfileModal = () => {
   };
 
   return (
-    <AnimatePresence>
-      {profileOpen && (
-        <motion.div
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          exit={{ scale: 0 }}
-          transition={{ type: "tween", duration: 0.05, stiffness: 100 }}
-          className="w-full h-full fixed"
-        >
+    profileOpen && (
           <div className="z-10 w-full h-full fixed flex justify-center items-center backdrop-blur">
             {selectedChat.isGroupChat ? (
               <div
@@ -293,9 +285,7 @@ const ProfileModal = () => {
               </div>
             )}
           </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+      )
   );
 };
 
