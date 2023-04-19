@@ -1,17 +1,16 @@
 const express = require('express');
-const {chats} = require('./data/data');
+const {chats} = require('../data/data');
 const dotenv = require('dotenv');
-const connectDB = require('./config/db');
+const connectDB = require('../config/db');
 const app = express();
 const colors = require('colors');
-const userRoutes = require('./routes/userRoutes');
-const chatRoutes = require('./routes/chatRoutes');
-const messageRoutes = require('./routes/messageRoutes');
-const { notFound, errorHandler } = require('./middleware/errorMiddleware');
-const { allUser } = require('./controllers/userControllers');
+const userRoutes = require('../routes/userRoutes');
+const chatRoutes = require('../routes/chatRoutes');
+const messageRoutes = require('../routes/messageRoutes');
+const { notFound, errorHandler } = require('../middleware/errorMiddleware');
+const { allUser } = require('../controllers/userControllers');
 const path = require('path');
 const cors = require('cors');
-
 
 
 dotenv.config();
