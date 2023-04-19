@@ -35,7 +35,7 @@ const __dirname1 = path.resolve();
 
 if(process.env.NODE_ENV = 'production'){
     app.use(express.static(path.join(__dirname1,"../chat_app_frontend/build")));
-    app.get("*",cors(),(req,res)=>{
+    app.get("/",cors(),(req,res)=>{
         res.sendFile(path.resolve(__dirname1,"../chat_app_frontend","build","index.html"));
     });
 }

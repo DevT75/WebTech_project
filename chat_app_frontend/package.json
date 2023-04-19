@@ -2,7 +2,7 @@
   "name": "chat_app",
   "version": "0.1.0",
   "private": true,
-  "proxy": "https://web-tech-project-api-new-git-main-devt75.vercel.app",
+  "proxy": "https://web-tech-project-api-new.vercel.app/",
   "dependencies": {
     "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",
