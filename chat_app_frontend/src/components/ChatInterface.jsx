@@ -91,7 +91,7 @@ const ChatPage = ({ selectedChat }) => {
         };
         setNewMessage("");
         const { data } = await axios.post(
-          "https://web-tech-project-api.vercel.app/api/message",
+          "/api/message",
           {
             content: newMessage,
             chatId: selectedChat._id,
@@ -120,7 +120,7 @@ const ChatPage = ({ selectedChat }) => {
         };
         setNewMessage("");
         const { data } = await axios.post(
-          "https://web-tech-project-api.vercel.app/api/message",
+          "/api/message",
           {
             content: newMessage,
             chatId: selectedChat._id,
@@ -145,7 +145,7 @@ const ChatPage = ({ selectedChat }) => {
           Authorization: `Bearer ${user.token}`,
         },
       }
-      const { data } = await axios.get(`https://web-tech-project-api.vercel.app/api/message/${selectedChat._id}`,config);
+      const { data } = await axios.get(`/api/message/${selectedChat._id}`,config);
       setMessages(data);
       // console.log(data);
       setLoading(false);

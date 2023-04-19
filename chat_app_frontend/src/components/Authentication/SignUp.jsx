@@ -106,7 +106,7 @@ const SignUp = () => {
                 },
             };
             // console.log(pic);
-            const { data } = await axios.post('https://web-tech-project-api.vercel.app/api/user', { name, email, password, pic },config);
+            const { data } = await axios.post('/api/user', { name, email, password, pic },config);
             toastIt("Succesful Registration!!");
             localStorage.setItem('userInfo',JSON.stringify(data));
             setIsLoading(false);

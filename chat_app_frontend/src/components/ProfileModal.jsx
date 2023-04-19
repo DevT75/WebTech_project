@@ -69,7 +69,7 @@ const ProfileModal = () => {
           Authorization: `Bearer ${user.token}`,
         },
       };
-      const { data } = await axios.get(`https://web-tech-project-api.vercel.app/api/user?search=${search}`, config);
+      const { data } = await axios.get(`/api/user?search=${search}`, config);
       setLoading(false);
       setSearchResult(data);
     } catch (error) {
@@ -88,7 +88,7 @@ const ProfileModal = () => {
           Authorization: `Bearer ${user.token}`,
         },
       }
-      const { data } = await axios.put("https://web-tech-project-api.vercel.app/api/chat/rename",{
+      const { data } = await axios.put("/api/chat/rename",{
         chatId: selectedChat._id,
         chatName: groupChatName,
       },config);
@@ -116,7 +116,7 @@ const ProfileModal = () => {
           Authorization: `Bearer ${user.token}`,
         },
       }
-      const { data } = await axios.put("https://web-tech-project-api.vercel.app/api/chat/groupadd",{
+      const { data } = await axios.put("/api/chat/groupadd",{
         chatId: selectedChat._id,
         userId: user1._id,
       },config);
@@ -139,7 +139,7 @@ const ProfileModal = () => {
           Authorization: `Bearer ${user.token}`,
         },
       }
-      const { data } = await axios.put("https://web-tech-project-api.vercel.app/api/chat/groupremove",{
+      const { data } = await axios.put("/api/chat/groupremove",{
         chatId: selectedChat._id,
         userId: user1._id,
       },config);
