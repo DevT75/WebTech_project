@@ -20,26 +20,28 @@ connectDB();
 
 const port = process.env.PORT || 5000;
 
-app.use(cors());
-
 app.use(express.json()); // TO accept json data
 
-app.use('/api/user',userRoutes);
+app.use(cors());
 
-app.use('/api/chat',chatRoutes);
+app.options('*', cors());
 
-app.use('/api/message',messageRoutes);
+app.use('/api/user',cors(),userRoutes);
+
+app.use('/api/chat',cors(),chatRoutes);
+
+app.use('/api/message',cors(),messageRoutes);
 
 const __dirname1 = path.resolve();
 
 if(process.env.NODE_ENV = 'production'){
     app.use(express.static(path.join(__dirname1,"../chat_app_frontend/build")));
-    app.get("*",(req,res)=>{
+    app.get("*",cors(),(req,res)=>{
         res.sendFile(path.resolve(__dirname1,"../chat_app_frontend","build","index.html"));
     });
 }
 else{
-    app.get('/',(req,res)=> {
+    app.get('/',cors(),(req,res)=> {
         // res.send("Hello World");
         console.log(`API is running successfully`);
     });
