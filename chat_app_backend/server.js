@@ -10,6 +10,8 @@ const messageRoutes = require('./routes/messageRoutes');
 const { notFound, errorHandler } = require('./middleware/errorMiddleware');
 const { allUser } = require('./controllers/userControllers');
 const path = require('path');
+const cors = require('cors');
+
 
 
 dotenv.config();
@@ -17,6 +19,11 @@ dotenv.config();
 connectDB();
 
 const port = process.env.PORT || 5000;
+
+app.use(cors({
+    origin: "https://web-tech-project-ten.vercel.app",
+    optionsSuccessStatus: 200
+}))
 
 app.use(express.json()); // TO accept json data
 
@@ -31,13 +38,12 @@ const __dirname1 = path.resolve();
 if(process.env.NODE_ENV = 'production'){
     app.use(express.static(path.join(__dirname1,"../chat_app_frontend/build")));
     app.get("*",(req,res)=>{
-        res.header('Access-Control-Allow-Origin', 'https://web-tech-project-ten.vercel.app');
         res.sendFile(path.resolve(__dirname1,"../chat_app_frontend","build","index.html"));
     });
 }
 else{
     app.get('/',(req,res)=> {
-        res.header('Access-Control-Allow-Origin', 'https://web-tech-project-ten.vercel.app');
+        // res.send("Hello World");
         console.log(`API is running successfully`);
     });
 }
