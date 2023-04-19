@@ -31,12 +31,13 @@ const __dirname1 = path.resolve();
 if(process.env.NODE_ENV = 'production'){
     app.use(express.static(path.join(__dirname1,"../chat_app_frontend/build")));
     app.get("*",(req,res)=>{
+        res.header('Access-Control-Allow-Origin', 'https://web-tech-project-ten.vercel.app');
         res.sendFile(path.resolve(__dirname1,"../chat_app_frontend","build","index.html"));
     });
 }
 else{
     app.get('/',(req,res)=> {
-        // res.send("Hello World");
+        res.header('Access-Control-Allow-Origin', 'https://web-tech-project-ten.vercel.app');
         console.log(`API is running successfully`);
     });
 }
