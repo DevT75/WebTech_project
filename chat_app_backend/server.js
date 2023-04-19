@@ -20,10 +20,7 @@ connectDB();
 
 const port = process.env.PORT || 5000;
 
-app.use(cors({
-    origin: "https://web-tech-project-ten.vercel.app",
-    optionsSuccessStatus: 200
-}))
+app.use(cors());
 
 app.use(express.json()); // TO accept json data
 
