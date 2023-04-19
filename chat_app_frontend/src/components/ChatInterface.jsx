@@ -32,7 +32,7 @@ const ChatPage = ({ selectedChat }) => {
   const [userLogged, setUserLogged] = useState(
     JSON.parse(localStorage.getItem("userInfo"))
   );
-  const { fetchAgin, setFetchAgain, user, fetchMessageAgain } = useContext(ChatContext);
+  const { fetchAgin, setFetchAgain, user, fetchMessageAgain, notification, setNotification } = useContext(ChatContext);
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -99,7 +99,7 @@ const ChatPage = ({ selectedChat }) => {
           config
         );
 
-        console.log(data);
+        // console.log(data);
 
         socket.emit("new message",data);
         setMessages([...messages, data]);
@@ -147,7 +147,7 @@ const ChatPage = ({ selectedChat }) => {
       }
       const { data } = await axios.get(`/api/message/${selectedChat._id}`,config);
       setMessages(data);
-      console.log(data);
+      // console.log(data);
       setLoading(false);
       socket.emit("join chat", selectedChat._id);
 
@@ -159,11 +159,18 @@ const ChatPage = ({ selectedChat }) => {
     fetchMessages();
     selectedChatCompare = selectedChat;
   },[selectedChat,fetchMessageAgain]);
+  
+  useEffect(()=>{
+    console.log(notification);
+  },[notification]);
 
   useEffect(()=>{
     socket.on("message received",(newMessageReceived)=>{
       if(!selectedChatCompare || selectedChatCompare._id !== newMessageReceived.chat._id){
-        // give notification
+        if(!notification.includes(newMessageReceived)){
+          setNotification([newMessageReceived,...notification]);
+          setFetchAgain(!fetchAgin);
+        }
       }
       else{
         setMessages([...messages,newMessageReceived]);

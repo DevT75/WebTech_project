@@ -68,7 +68,7 @@ const SignUp = () => {
             }).then((res)=>res.json())
             .then((d)=>{
                 setPic(d.url.toString());
-                console.log(d.url.toString());
+                // console.log(d.url.toString());
                 setIsLoading(false);
             }).catch((err)=>{
                 console.log(err);
@@ -84,9 +84,9 @@ const SignUp = () => {
 
     }
     const handleSubmit = async ()=>{
-        console.log({
-            name,email,password,pic
-        });
+        // console.log({
+        //     name,email,password,pic
+        // });
         setIsLoading(true);
 
         if(!name || !email || !password || !confirmPassword){
