@@ -8,7 +8,7 @@ import ProfileModal from "./ProfileModal";
 import ScrollableChat from "./ScrollableChat";
 import io from 'socket.io-client';
 
-const ENDPOINT = "https://vaarta.vercel.app/";
+const ENDPOINT = "https://vaarta.vercel.app";
 var socket,selectedChatCompare;
 
 const Dropdown = () => {
