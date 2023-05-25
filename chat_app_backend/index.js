@@ -50,7 +50,7 @@ else{
 app.use(notFound);
 app.use(errorHandler);
 
-const server = app.listen(5000, () => console.log(`Example app listening on port ${port}!`.yellow.bold));  
+const server = app.listen(port, () => console.log(`Example app listening on port ${port}!`.yellow.bold));  
 
 const io = require('socket.io')(server,{
     pingTimeout: 60000,
