@@ -57,7 +57,7 @@ const Login = () => {
             <div className="flex flex-col justify-start mt-0">
                 <InputField
                 type="text"
-                    placeholder="Tarak"
+                    placeholder="Enter Name"
                     onChange={handleChange}
                     name="email"
                     value={email}
