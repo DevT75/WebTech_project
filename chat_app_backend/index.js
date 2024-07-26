@@ -17,7 +17,7 @@ const port = process.env.DPORT || 5000;
 
 // CORS configuration
 const corsOptions = {
-    origin: ["https://vaarta.vercel.app"],
+    origin: "*",
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
 };
 
