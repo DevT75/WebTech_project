@@ -18,7 +18,7 @@ dotenv.config();
 
 connectDB();
 
-const port = process.env.PORT || 5000;
+const port = process.env.DPORT || 5000;
 
 app.use(express.json()); // TO accept json data
 
@@ -34,7 +34,7 @@ app.use('/api/message',cors(),messageRoutes);
 
 const __dirname1 = path.resolve();
 
-if(process.env.NODE_ENV = 'production'){
+if(process.env.NODE_ENV === 'production'){
     app.use(express.static(path.join(__dirname1,"../chat_app_frontend/build")));
     app.get("*",cors(),(req,res)=>{
         res.sendFile(path.resolve(__dirname1,"../chat_app_frontend","build","index.html"));
@@ -44,19 +44,27 @@ else{
     app.get('/',cors(),(req,res)=> {
         // res.send("Hello World");
         console.log(`API is running successfully`);
+        res.send("API is running successfully");
     });
 }
+
+// app.get('/',cors(),(req,res)=>{
+//     res.send("Hello World");
+// })
 
 app.use(notFound);
 app.use(errorHandler);
 
-const server = app.listen(port, () => console.log(`Example app listening on port ${port}!`.yellow.bold));  
+const server = app.listen(port,'0.0.0.0', () => console.log(`Example app listening on port ${port}!`.yellow.bold));
+const corsOptions = {
+    origin: ["https://vaarta.vercel.app", "http://localhost:3000"],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+};
+app.use(cors(corsOptions));
 
-const io = require('socket.io')(server,{
+const io = require('socket.io')(server, {
     pingTimeout: 60000,
-    cors: {
-        origin: "http://localhost:3000",
-    }
+    cors: corsOptions
 });
 
 io.on("connection",(socket)=>{
