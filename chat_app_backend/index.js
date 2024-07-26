@@ -1,100 +1,93 @@
 const express = require('express');
-const {chats} = require('./data/data');
 const dotenv = require('dotenv');
 const connectDB = require('./config/db');
-const app = express();
 const colors = require('colors');
 const userRoutes = require('./routes/userRoutes');
 const chatRoutes = require('./routes/chatRoutes');
 const messageRoutes = require('./routes/messageRoutes');
 const { notFound, errorHandler } = require('./middleware/errorMiddleware');
-const { allUser } = require('./controllers/userControllers');
 const path = require('path');
 const cors = require('cors');
 
-
-
 dotenv.config();
-
 connectDB();
 
+const app = express();
 const port = process.env.DPORT || 5000;
 
-app.use(express.json()); // TO accept json data
+// CORS configuration
+const corsOptions = {
+    origin: ["https://vaarta.vercel.app"],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+};
 
-app.use(cors());
+// Apply CORS globally
+app.use(cors(corsOptions));
 
-app.options('*', cors());
+// Middleware
+app.use(express.json()); // To accept JSON data
 
-app.use('/api/user',cors(),userRoutes);
+// Routes
+app.use('/api/user', userRoutes);
+app.use('/api/chat', chatRoutes);
+app.use('/api/message', messageRoutes);
 
-app.use('/api/chat',cors(),chatRoutes);
-
-app.use('/api/message',cors(),messageRoutes);
-
+// Serve static files in production
 const __dirname1 = path.resolve();
-
-if(process.env.NODE_ENV === 'production'){
-    app.use(express.static(path.join(__dirname1,"../chat_app_frontend/build")));
-    app.get("*",cors(),(req,res)=>{
-        res.sendFile(path.resolve(__dirname1,"../chat_app_frontend","build","index.html"));
+if (process.env.NODE_ENV === 'production') {
+    app.use(express.static(path.join(__dirname1, "../chat_app_frontend/build")));
+    app.get("*", (req, res) => {
+        res.sendFile(path.resolve(__dirname1, "../chat_app_frontend", "build", "index.html"));
     });
-}
-else{
-    app.get('/',cors(),(req,res)=> {
-        // res.send("Hello World");
+} else {
+    app.get('/', (req, res) => {
         console.log(`API is running successfully`);
         res.send("API is running successfully");
     });
 }
 
-// app.get('/',cors(),(req,res)=>{
-//     res.send("Hello World");
-// })
-
+// Error handling middleware
 app.use(notFound);
 app.use(errorHandler);
 
-const server = app.listen(port,'0.0.0.0', () => console.log(`Example app listening on port ${port}!`.yellow.bold));
-const corsOptions = {
-    origin: ["https://vaarta.vercel.app", "http://localhost:3000"],
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
-};
-app.use(cors(corsOptions));
+// Start the server
+const server = app.listen(port, '0.0.0.0', () => console.log(`Server listening on port ${port}!`.yellow.bold));
 
+// Socket.IO setup
 const io = require('socket.io')(server, {
     pingTimeout: 60000,
     cors: corsOptions
 });
 
-io.on("connection",(socket)=>{
-    console.log("connected to socket.io");
-    socket.on("setup",(userData)=>{
+io.on("connection", (socket) => {
+    console.log("Connected to socket.io");
+
+    socket.on("setup", (userData) => {
         socket.join(userData._id);
         console.log(userData._id);
         socket.emit("connected");
     });
-    socket.on("join chat",(room)=>{
+
+    socket.on("join chat", (room) => {
         socket.join(room);
         console.log("User joined room: " + room);
     });
 
-    socket.on("typing",(room)=>socket.in(room).emit("typing"));
-    socket.on("stop typing",(room)=>socket.in(room).emit("stop typing"));
+    socket.on("typing", (room) => socket.in(room).emit("typing"));
+    socket.on("stop typing", (room) => socket.in(room).emit("stop typing"));
 
-    socket.on("new message",(newMessageReceived)=>{
+    socket.on("new message", (newMessageReceived) => {
         var chat = newMessageReceived.chat;
-        if(!chat.users) return console.log("chat.users not defined");
+        if (!chat.users) return console.log("chat.users not defined");
+
         chat.users.forEach(user => {
-            if(user._id === newMessageReceived.sender._id) return;
-            socket.in(user._id).emit("message received",newMessageReceived);
+            if (user._id === newMessageReceived.sender._id) return;
+            socket.in(user._id).emit("message received", newMessageReceived);
         });
     });
 
-    socket.off("setup",()=>{
+    socket.off("setup", () => {
         console.log("USER DISCONNECTED");
         socket.leave(userData._id);
     });
-
-})
-
+});
