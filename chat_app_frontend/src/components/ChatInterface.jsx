@@ -8,8 +8,8 @@ import ProfileModal from "./ProfileModal";
 import ScrollableChat from "./ScrollableChat";
 import io from 'socket.io-client';
 
-const ENDPOINT = "https://vaarta.vercel.app";
-var socket,selectedChatCompare;
+const ENDPOINT = "https://webtech-api-r6c3dizosq-de.a.run.app";
+var socket, selectedChatCompare;
 
 const Dropdown = () => {
   const { handleOpen } = useContext(ChatContext);
@@ -37,9 +37,9 @@ const ChatPage = ({ selectedChat }) => {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [newMessage, setNewMessage] = useState();
-  const [socketConnected,setSocketConnected] = useState(false);
+  const [socketConnected, setSocketConnected] = useState(false);
   const [typing, setTyping] = useState(false);
-  const [isTyping,setIsTyping] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
 
   const getName = (loggedUser, users) => {
     return users[0]._id === loggedUser._id ? users[1].name : users[0].name;
@@ -53,35 +53,35 @@ const ChatPage = ({ selectedChat }) => {
   useEffect(() => {
     // console.log(selectedChat);
   }, [selectedChat]);
-  useEffect(()=>{
+  useEffect(() => {
     socket = io(ENDPOINT);
-    socket.emit("setup",user);
-    socket.on("connected",()=> setSocketConnected(true));
-    socket.on("typing",()=> setIsTyping(true));
-    socket.on("stop typing",()=>setIsTyping(false));
-  },[]);
+    socket.emit("setup", user);
+    socket.on("connected", () => setSocketConnected(true));
+    socket.on("typing", () => setIsTyping(true));
+    socket.on("stop typing", () => setIsTyping(false));
+  }, []);
   const handleNewMessage = (e) => {
     const { value } = e.target;
     setNewMessage(value);
-    if(!socketConnected) return;
-    if(!typing){
-      socket.emit("typing",selectedChat._id);
+    if (!socketConnected) return;
+    if (!typing) {
+      socket.emit("typing", selectedChat._id);
       setTyping(true);
     }
     let lastTypingTime = new Date().getTime();
-    var  timerLength = 3000;
-    setTimeout(()=>{
+    var timerLength = 3000;
+    setTimeout(() => {
       var timeNow = new Date().getTime();
       var timeDiff = timeNow - lastTypingTime;
-      if(timeDiff >= timerLength && typing){
-        socket.emit("stop typing",selectedChat._id);
+      if (timeDiff >= timerLength && typing) {
+        socket.emit("stop typing", selectedChat._id);
         setTyping(false);
       }
-    },timerLength);
+    }, timerLength);
   };
   const sendViaClick = async () => {
     if (newMessage) {
-      socket.emit("stop typing",selectedChat._id);
+      socket.emit("stop typing", selectedChat._id);
       try {
         const config = {
           headers: {
@@ -91,7 +91,7 @@ const ChatPage = ({ selectedChat }) => {
         };
         setNewMessage("");
         const { data } = await axios.post(
-          "https://web-tech-project-api.vercel.app/api/message",
+          "https://webtech-api-r6c3dizosq-de.a.run.app/api/message",
           {
             content: newMessage,
             chatId: selectedChat._id,
@@ -99,9 +99,7 @@ const ChatPage = ({ selectedChat }) => {
           config
         );
 
-        // console.log(data);
-
-        socket.emit("new message",data);
+        socket.emit("new message", data);
         setMessages([...messages, data]);
       } catch (error) {
         throw new Error(error.message);
@@ -110,7 +108,7 @@ const ChatPage = ({ selectedChat }) => {
   };
   const sendMessage = async (e) => {
     if (e.key === "Enter" && newMessage) {
-      socket.emit("stop typing",selectedChat._id);
+      socket.emit("stop typing", selectedChat._id);
       try {
         const config = {
           headers: {
@@ -120,7 +118,7 @@ const ChatPage = ({ selectedChat }) => {
         };
         setNewMessage("");
         const { data } = await axios.post(
-          "https://web-tech-project-api.vercel.app/api/message",
+          "https://webtech-api-r6c3dizosq-de.a.run.app/api/message",
           {
             content: newMessage,
             chatId: selectedChat._id,
@@ -129,15 +127,15 @@ const ChatPage = ({ selectedChat }) => {
         );
 
         console.log(data);
-        socket.emit("new message",data);
+        socket.emit("new message", data);
         setMessages([...messages, data]);
       } catch (error) {
         throw new Error(error.message);
       }
     }
   };
-  const fetchMessages = async ()=>{
-    if(!selectedChat) return;
+  const fetchMessages = async () => {
+    if (!selectedChat) return;
     try {
       setLoading(true);
       const config = {
@@ -145,9 +143,8 @@ const ChatPage = ({ selectedChat }) => {
           Authorization: `Bearer ${user.token}`,
         },
       }
-      const { data } = await axios.get(`https://web-tech-project-api.vercel.app/api/message/${selectedChat._id}`,config);
+      const { data } = await axios.get(`https://webtech-api-r6c3dizosq-de.a.run.app/api/message/${selectedChat._id}`, config);
       setMessages(data);
-      // console.log(data);
       setLoading(false);
       socket.emit("join chat", selectedChat._id);
 
@@ -155,25 +152,25 @@ const ChatPage = ({ selectedChat }) => {
       throw new Error(error.message);
     }
   }
-  useEffect(()=>{
+  useEffect(() => {
     fetchMessages();
     selectedChatCompare = selectedChat;
-  },[selectedChat,fetchMessageAgain]);
-  
-  useEffect(()=>{
-    console.log(notification);
-  },[notification]);
+  }, [selectedChat, fetchMessageAgain]);
 
-  useEffect(()=>{
-    socket.on("message received",(newMessageReceived)=>{
-      if(!selectedChatCompare || selectedChatCompare._id !== newMessageReceived.chat._id){
-        if(!notification.includes(newMessageReceived)){
-          setNotification([newMessageReceived,...notification]);
+  useEffect(() => {
+    console.log(notification);
+  }, [notification]);
+
+  useEffect(() => {
+    socket.on("message received", (newMessageReceived) => {
+      if (!selectedChatCompare || selectedChatCompare._id !== newMessageReceived.chat._id) {
+        if (!notification.includes(newMessageReceived)) {
+          setNotification([newMessageReceived, ...notification]);
           setFetchAgain(!fetchAgin);
         }
       }
-      else{
-        setMessages([...messages,newMessageReceived]);
+      else {
+        setMessages([...messages, newMessageReceived]);
       }
     })
   })
@@ -237,9 +234,6 @@ const ChatPage = ({ selectedChat }) => {
         <div className="w-full text-white h-[100%] overflow-y-scroll invisibleScrollBar overflow-x-hidden">
           <ScrollableChat messages={messages}/>
         </div>
-        {/* {
-            isTyping && <div className="text-white">Loading...</div>
-        } */}
         <div className="w-full h-15 bottom-0 flex flex-row justify-around items-center p-2">
           <ImAttachment
             className="hover:cursor-pointer text-[#ffea20]"

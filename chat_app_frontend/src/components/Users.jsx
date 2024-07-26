@@ -37,7 +37,7 @@ const SearchBar = React.forwardRef(
             Authorization: `Bearer ${user.token}`,
           },
         };
-        const { data } = await axios.get(`https://web-tech-project-api.vercel.app/api/user?search=${search}`, config);
+        const { data } = await axios.get(`https://webtech-api-r6c3dizosq-de.a.run.app/api/user?search=${search}`, config);
         setLoading(false);
         setSearchResult(data);
       } catch (error) {
@@ -221,7 +221,7 @@ const RecentChats = () => {
           Authorization: `Bearer ${loggedUser.token}`,
         },
       };
-      const { data } = await axios.get("https://web-tech-project-api.vercel.app/api/chat", config);
+      const { data } = await axios.get("https://webtech-api-r6c3dizosq-de.a.run.app/api/chat", config);
       // console.log(data);
       if (!chats.find((c) => c._id === data._id))
         setChats((prev) => [...data, ...prev]);
@@ -362,7 +362,7 @@ const CreateGroup = React.forwardRef(
           },
         };
         const { data } = await axios.post(
-          "https://web-tech-project-api.vercel.app/api/chat/group",
+          "https://webtech-api-r6c3dizosq-de.a.run.app/api/chat/group",
           {
             name: groupName,
             users: JSON.stringify(selectedUsers.map((u) => u._id)),
@@ -396,7 +396,7 @@ const CreateGroup = React.forwardRef(
             Authorization: `Bearer ${user.token}`,
           },
         };
-        const { data } = await axios.get(`https://web-tech-project-api.vercel.app/api/user?search=${search}`, config);
+        const { data } = await axios.get(`https://webtech-api-r6c3dizosq-de.a.run.app/api/user?search=${search}`, config);
         setLoading(false);
         setSearchResult(data);
       } catch (error) {
@@ -584,7 +584,7 @@ const Users = ({ toggle, setToggle, createGc, setCreateGc }) => {
         },
       };
       console.log(userId);
-      const { data } = await axios.post("https://web-tech-project-api.vercel.app/api/chat", { userId }, config);
+      const { data } = await axios.post("https://webtech-api-r6c3dizosq-de.a.run.app/api/chat", { userId }, config);
 
       if (!chats.find((c) => c._id === data._id))
         setChats((prev) => [data, ...prev]);
