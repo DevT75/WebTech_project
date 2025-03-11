@@ -8,7 +8,7 @@ import ProfileModal from "./ProfileModal";
 import ScrollableChat from "./ScrollableChat";
 import io from 'socket.io-client';
 
-const ENDPOINT = "http://13.127.80.208:5000";
+const ENDPOINT = "//13.127.80.208:5000";
 var socket, selectedChatCompare;
 
 const Dropdown = () => {
@@ -96,7 +96,7 @@ const ChatPage = ({ selectedChat }) => {
         };
         setNewMessage("");
         const { data } = await axios.post(
-          "http://13.127.80.208:5000/api/message",
+          "//13.127.80.208:5000/api/message",
           {
             content: newMessage,
             chatId: selectedChat._id,
@@ -123,7 +123,7 @@ const ChatPage = ({ selectedChat }) => {
         };
         setNewMessage("");
         const { data } = await axios.post(
-          "http://13.127.80.208:5000/api/message",
+          "//13.127.80.208:5000/api/message",
           {
             content: newMessage,
             chatId: selectedChat._id,
@@ -148,7 +148,7 @@ const ChatPage = ({ selectedChat }) => {
           Authorization: `Bearer ${user.token}`,
         },
       }
-      const { data } = await axios.get(`http://13.127.80.208:5000/api/message/${selectedChat._id}`, config);
+      const { data } = await axios.get(`//13.127.80.208:5000/api/message/${selectedChat._id}`, config);
       setMessages(data);
       setLoading(false);
       socket.emit("join chat", selectedChat._id);
