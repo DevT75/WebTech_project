@@ -37,7 +37,7 @@ const SearchBar = React.forwardRef(
             Authorization: `Bearer ${user.token}`,
           },
         };
-        const { data } = await axios.get(`https://webtech-api-r6c3dizosq-de.a.run.app/api/user?search=${search}`, config);
+        const { data } = await axios.get(`http://13.127.80.208:5000/api/user?search=${search}`, config);
         setLoading(false);
         setSearchResult(data);
       } catch (error) {
@@ -221,8 +221,8 @@ const RecentChats = () => {
           Authorization: `Bearer ${loggedUser.token}`,
         },
       };
-      const { data } = await axios.get("https://webtech-api-r6c3dizosq-de.a.run.app/api/chat", config);
-      // console.log(data);
+      const { data } = await axios.get("http://13.127.80.208:5000/api/chat", config);
+      console.log(data);
       if (!chats.find((c) => c._id === data._id))
         setChats((prev) => [...data, ...prev]);
       // setChats((prev)=>[...data,...prev]);
@@ -238,10 +238,15 @@ const RecentChats = () => {
   }, [fetchAgain]);
   // console.log(chats);
   const getName = (loggedUser, users) => {
+    if (!Array.isArray(users) || users.length < 2) return "Unknown";
     return users[0]._id === loggedUser._id ? users[1].name : users[0].name;
   };
   const getImage = (loggedUser, users) => {
-    return users[0]._id === loggedUser._id ? users[1].pic : users[0].pic;
+    if (!Array.isArray(users) || users.length < 2) {
+      return "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg";
+    }
+    return users[0]._id === loggedUser._id ? users[1].pic ? users[1].pic : "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg"
+      : users[0].pic ? users[0].pic : "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg";
   };
   return (
     <AnimatePresence>
@@ -362,7 +367,7 @@ const CreateGroup = React.forwardRef(
           },
         };
         const { data } = await axios.post(
-          "https://webtech-api-r6c3dizosq-de.a.run.app/api/chat/group",
+          "http://13.127.80.208:5000/api/chat/group",
           {
             name: groupName,
             users: JSON.stringify(selectedUsers.map((u) => u._id)),
@@ -396,7 +401,7 @@ const CreateGroup = React.forwardRef(
             Authorization: `Bearer ${user.token}`,
           },
         };
-        const { data } = await axios.get(`https://webtech-api-r6c3dizosq-de.a.run.app/api/user?search=${search}`, config);
+        const { data } = await axios.get(`http://13.127.80.208:5000/api/user?search=${search}`, config);
         setLoading(false);
         setSearchResult(data);
       } catch (error) {
@@ -584,7 +589,7 @@ const Users = ({ toggle, setToggle, createGc, setCreateGc }) => {
         },
       };
       console.log(userId);
-      const { data } = await axios.post("https://webtech-api-r6c3dizosq-de.a.run.app/api/chat", { userId }, config);
+      const { data } = await axios.post("http://13.127.80.208:5000/api/chat", { userId }, config);
 
       if (!chats.find((c) => c._id === data._id))
         setChats((prev) => [data, ...prev]);

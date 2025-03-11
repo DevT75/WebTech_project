@@ -8,7 +8,7 @@ import ProfileModal from "./ProfileModal";
 import ScrollableChat from "./ScrollableChat";
 import io from 'socket.io-client';
 
-const ENDPOINT = "https://webtech-api-r6c3dizosq-de.a.run.app";
+const ENDPOINT = "http://13.127.80.208:5000";
 var socket, selectedChatCompare;
 
 const Dropdown = () => {
@@ -42,10 +42,15 @@ const ChatPage = ({ selectedChat }) => {
   const [isTyping, setIsTyping] = useState(false);
 
   const getName = (loggedUser, users) => {
+    if (!Array.isArray(users) || users.length < 2) return "Unknown";
     return users[0]._id === loggedUser._id ? users[1].name : users[0].name;
   };
   const getImage = (loggedUser, users) => {
-    return users[0]._id === loggedUser._id ? users[1].pic : users[0].pic;
+    if (!Array.isArray(users) || users.length < 2) {
+      return "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg";
+    }
+    return users[0]._id === loggedUser._id ? users[1].pic ? users[1].pic : "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg"
+      : users[0].pic ? users[0].pic : "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg";
   };
   useEffect(() => {
     setUserLogged(JSON.parse(localStorage.getItem("userInfo")));
@@ -91,7 +96,7 @@ const ChatPage = ({ selectedChat }) => {
         };
         setNewMessage("");
         const { data } = await axios.post(
-          "https://webtech-api-r6c3dizosq-de.a.run.app/api/message",
+          "http://13.127.80.208:5000/api/message",
           {
             content: newMessage,
             chatId: selectedChat._id,
@@ -118,7 +123,7 @@ const ChatPage = ({ selectedChat }) => {
         };
         setNewMessage("");
         const { data } = await axios.post(
-          "https://webtech-api-r6c3dizosq-de.a.run.app/api/message",
+          "http://13.127.80.208:5000/api/message",
           {
             content: newMessage,
             chatId: selectedChat._id,
@@ -143,7 +148,7 @@ const ChatPage = ({ selectedChat }) => {
           Authorization: `Bearer ${user.token}`,
         },
       }
-      const { data } = await axios.get(`https://webtech-api-r6c3dizosq-de.a.run.app/api/message/${selectedChat._id}`, config);
+      const { data } = await axios.get(`http://13.127.80.208:5000/api/message/${selectedChat._id}`, config);
       setMessages(data);
       setLoading(false);
       socket.emit("join chat", selectedChat._id);

@@ -42,9 +42,9 @@ const ShowAccount = React.forwardRef(({ isOpen, user }, ref) => {
         >
           <div
             ref={ref}
-            className="h-96 w-96 bg-zinc-900 p-2 rounded-md z-10 absolute shadow-lg flex flex-col justify-around items-center"
+            className="h-96 w-96 bg-zinc-900 p-2 pt-8 rounded-md z-10 absolute shadow-lg flex flex-col justify-around items-center"
           >
-            <img src={user.pic} className="rounded-full w-40 h-40" alt="hello"/>
+            <img src={user.pic ? user.pic : "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg"} className="rounded-full w-40 h-40" alt="hello"/>
             <div className="w-full h-40 flex flex-col justify-around items-center">
               <div className="text-[#ffea20] text-base flex flex-row justify-between items-start w-[80%]">
                 Your Name
